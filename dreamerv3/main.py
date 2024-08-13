@@ -21,10 +21,11 @@ from embodied import wrappers
 
 def main(argv=None):
 
-	embodied.print(r"---	___													 __	 ______ ---")
-	embodied.print(r"--- |	 \ _ _ ___ __ _ _ __	___ _ \ \ / /__ / ---")
-	embodied.print(r"--- | |) | '_/ -_) _` | '	\/ -_) '/\ V / |_ \ ---")
-	embodied.print(r"--- |___/|_| \___\__,_|_|_|_\___|_|	\_/ |___/ ---")
+	embodied.print(r"---  ___                           __   ______ ---")
+	embodied.print(r"--- |   \ _ _ ___ __ _ _ __  ___ _ \ \ / /__ / ---")
+	embodied.print(r"--- | |) | '_/ -_) _` | '  \/ -_) '/\ V / |_ \ ---")
+	embodied.print(r"--- |___/|_| \___\__,_|_|_|_\___|_|  \_/ |___/ ---")
+
 
 	from . import agent as agt
 	parsed, other = embodied.Flags(configs=['defaults']).parse_known(argv)
