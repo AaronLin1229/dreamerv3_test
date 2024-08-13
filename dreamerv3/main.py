@@ -36,7 +36,8 @@ def main(argv=None):
 	config = config.update(
 			logdir=config.logdir.format(timestamp=embodied.timestamp()),
 			replay_length=config.replay_length or config.batch_length,
-			replay_length_eval=config.replay_length_eval or config.batch_length_eval)
+			replay_length_eval=config.replay_length_eval or config.batch_length_eval
+	)
 	args = embodied.Config(
 			**config.run,
 			logdir=config.logdir,
@@ -45,7 +46,8 @@ def main(argv=None):
 			batch_length_eval=config.batch_length_eval,
 			replay_length=config.replay_length,
 			replay_length_eval=config.replay_length_eval,
-			replay_context=config.replay_context)
+			replay_context=config.replay_context
+	)
 	print('Run script:', args.script)
 	print('Logdir:', args.logdir)
 
@@ -64,7 +66,9 @@ def main(argv=None):
 				bind(make_agent, config),
 				bind(make_replay, config, 'replay'),
 				bind(make_env, config),
-				bind(make_logger, config), args)
+				bind(make_logger, config),
+				args
+		)
 
 	elif args.script == 'train_eval':
 		embodied.run.train_eval(
