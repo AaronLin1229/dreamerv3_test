@@ -57,6 +57,10 @@ class Agent(nj.Module):
 		self.rew = nets.MLP((), **config.rewhead, name='rew')
 		self.con = nets.MLP((), **config.conhead, name='con')
 
+		self.config._use_noise = config.get('use_noise', False)
+		self.config._noise_mean = config.get('noise_mean', 0)
+		self.config._noise_std = config.get('noise_std', 10)
+
 		# Actor
 		kwargs = {}
 		kwargs['shape'] = {
@@ -126,11 +130,38 @@ class Agent(nj.Module):
 	def init_report(self, batch_size):
 		return self.init_train(batch_size)
 
+	def add_gaussian_noise(self, obs, mean=0, std=10):
+		"""
+		Add Gaussian noise to the image-like observations.
+		
+		Args:
+			obs: The observation dict.
+			mean: Mean of the Gaussian noise.
+			std: Standard deviation of the Gaussian noise.
+		
+		Returns:
+			Observations with added Gaussian noise.
+		"""
+		noisy_obs = {}
+		for k, v in obs.items():
+			if k in self.obs_space and len(self.obs_space[k].shape) == 3 and self.obs_space[k].dtype == jnp.uint8:
+				noise = jax.random.normal(nj.seed(), v.shape, dtype=jnp.float32) * std + mean
+				noisy_v = jnp.clip(v + noise.astype(jnp.int32), 0, 255).astype(jnp.uint8)
+				noisy_obs[k] = noisy_v
+			else:
+				noisy_obs[k] = v
+		return noisy_obs
+
 	def policy(self, obs, carry, mode='train'):
 		self.config.jax.jit and embodied.print(
 				'Tracing policy function', color='yellow')
 		prevlat, prevact = carry
 		obs = self.preprocess(obs)
+		
+		# Add Gaussian noise to observations
+		if mode == 'train' and self.config._use_noise:
+			obs = self.add_gaussian_noise(obs, mean=self.config._noise_mean, std=self.config._noise_std)
+		
 		embed = self.enc(obs, bdims=1)
 		prevact = jaxutils.onehot_dict(prevact, self.act_space)
 		lat, out = self.dyn.observe(

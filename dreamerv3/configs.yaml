@@ -106,6 +106,10 @@ defaults:
   replay_critic_bootstrap: imag
   reward_grad: True
   report_openl_context: 8
+  # Noise parameters
+  use_noise: True
+  noise_mean: 0
+  noise_std: 10
 
   # World Model
   dyn:

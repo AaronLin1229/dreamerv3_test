@@ -23,6 +23,21 @@ To learn more:
 - [Project website][website]
 - [Twitter summary][tweet]
 
+## Now training script
+
+```
+ssh iis -L 12345:127.0.0.1:12345
+
+# one pane
+python dreamerv3/main.py \
+  --configs crafter \
+  --run.train_ratio 32 \
+  --logdir ~/logdir/{dir}
+
+# other pane
+tensorboard --logdir=~/logdir/{dir} --port=12345
+```
+
 ## DreamerV3
 
 DreamerV3 learns a world model from experiences and uses it to train an actor
